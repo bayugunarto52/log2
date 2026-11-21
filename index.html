@@ -1,0 +1,2924 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MPI Logaritma - Matematika SMA Kelas X Fase E (Final)</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-light: #eef2ff;
+    --primary-dark: #3730a3;
+    --secondary: #0ea5e9;
+    --accent-amber: #f59e0b;
+    --accent-emerald: #10b981;
+    --accent-rose: #f43f5e;
+    --accent-purple: #8b5cf6;
+    --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #ede9fe 50%, #fef3c7 100%);
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --shadow-soft: 0 12px 30px rgba(30, 41, 59, 0.08);
+    --shadow-hover: 0 16px 36px rgba(79, 70, 229, 0.16);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  }
+
+  body {
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 78px 16px 36px;
+    overflow-x: hidden;
+  }
+
+  /* Global Top-Right Control Bar */
+  .global-controls {
+    position: fixed;
+    top: 14px;
+    right: 16px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(10px);
+    padding: 8px 14px;
+    border-radius: 999px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+    border: 2px solid #e2e8f0;
+  }
+
+  .audio-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-audio {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1.5px solid #c7d2fe;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-audio.active {
+    background: var(--accent-emerald);
+    color: #ffffff;
+    border-color: var(--accent-emerald);
+  }
+
+  .volume-slider {
+    width: 72px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+
+  .btn-exit-global {
+    background: var(--accent-rose);
+    color: #ffffff;
+    border: none;
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.82rem;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(244, 63, 94, 0.3);
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+
+  .btn-exit-global:hover {
+    background: #e11d48;
+    transform: translateY(-1px);
+  }
+
+  /* Main Container */
+  .app-container {
+    width: 100%;
+    max-width: 960px;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    padding: 32px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    animation: fadeIn 0.35s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .screen {
+    display: none;
+  }
+
+  .screen.active {
+    display: block;
+  }
+
+  /* Typography & Math Formatting */
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.86rem;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(1.7rem, 3.2vw, 2.35rem);
+    color: #0f172a;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    color: #0f172a;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    line-height: 1.6;
+  }
+
+  .math-expr {
+    font-family: 'Cambria Math', 'Times New Roman', Georgia, serif;
+    font-size: 1.12em;
+    background: #f8fafc;
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    color: #1e1b4b;
+    display: inline-block;
+    font-weight: 600;
+  }
+
+  .math-box {
+    background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 100%);
+    border-left: 5px solid var(--primary);
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin: 14px 0;
+    font-size: 1.08rem;
+  }
+
+  .math-formula {
+    font-family: 'Cambria Math', 'Times New Roman', Georgia, serif;
+    font-size: 1.28rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-align: center;
+    padding: 10px;
+    background: #ffffff;
+    border-radius: 10px;
+    margin: 8px 0;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.08);
+  }
+
+  .frac {
+    display: inline-flex;
+    flex-direction: column;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 0.9em;
+    margin: 0 3px;
+  }
+  .frac > span:first-child {
+    border-bottom: 1.8px solid currentColor;
+    padding: 0 4px 1px;
+  }
+  .frac > span:last-child {
+    padding: 1px 4px 0;
+  }
+
+  /* Login Screen */
+  .login-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .illustration-card {
+    background: linear-gradient(145deg, #eff6ff, #f5f3ff);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+    border: 2px dashed #c7d2fe;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #334155;
+    font-size: 0.95rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #f8fafc;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.14);
+  }
+
+  .error-text {
+    color: var(--accent-rose);
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-top: 6px;
+    display: none;
+  }
+
+  .btn-primary-lg {
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.08rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.28);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .btn-primary-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(79, 70, 229, 0.36);
+  }
+
+  /* Home Menu Screen */
+  .welcome-banner {
+    background: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
+    color: #ffffff;
+    padding: 22px 26px;
+    border-radius: var(--radius-md);
+    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .welcome-banner h2 {
+    color: #ffffff;
+    margin-bottom: 4px;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .menu-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 20px 18px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .menu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary);
+  }
+
+  .menu-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.55rem;
+    flex-shrink: 0;
+    font-weight: 800;
+  }
+
+  .c-1 { background: #fef3c7; color: #d97706; }
+  .c-2 { background: #dbeafe; color: #2563eb; }
+  .c-3 { background: #fce7f3; color: #db2777; }
+  .c-4 { background: #dcfce7; color: #16a34a; }
+  .c-5 { background: #f3e8ff; color: #9333ea; }
+  .c-6 { background: #ffedd5; color: #ea580c; }
+  .c-7 { background: #e0f2fe; color: #0284c7; }
+
+  .menu-info h3 {
+    font-size: 1.08rem;
+    color: #0f172a;
+    margin-bottom: 3px;
+  }
+
+  .menu-info p {
+    font-size: 0.84rem;
+    color: var(--text-muted);
+  }
+
+  .home-footer {
+    text-align: center;
+    padding-top: 10px;
+    border-top: 1.5px solid #f1f5f9;
+  }
+
+  .btn-close-app {
+    background: #fff1f2;
+    color: #e11d48;
+    border: 2px solid #fecdd3;
+    padding: 12px 26px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.98rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-close-app:hover {
+    background: #e11d48;
+    color: #ffffff;
+    border-color: #e11d48;
+  }
+
+  /* Content Cards & Lists */
+  .tp-list {
+    display: grid;
+    gap: 14px;
+    margin: 18px 0;
+  }
+
+  .tp-item {
+    display: flex;
+    gap: 14px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    padding: 18px;
+    border-radius: 16px;
+    align-items: flex-start;
+  }
+
+  .tp-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #ffffff;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Belajar Sub-pages (Tahap 2) */
+  .learn-stepper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: #f1f5f9;
+    padding: 8px;
+    border-radius: 14px;
+  }
+
+  .step-pill {
+    flex: 1;
+    min-width: 110px;
+    padding: 9px 10px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .step-pill.active {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+  }
+
+  .learn-page {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .learn-page.active {
+    display: block;
+  }
+
+  .learn-layout {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .svg-diagram-box {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .svg-caption {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  /* Spark Question Box */
+  .spark-box {
+    background: #fffbeb;
+    border: 2px solid #fde68a;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-top: 16px;
+  }
+
+  .spark-title {
+    font-weight: 800;
+    color: #b45309;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+  }
+
+  .spark-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .spark-btn {
+    background: #ffffff;
+    border: 2px solid #fcd34d;
+    padding: 11px 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    color: #1e293b;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s;
+  }
+
+  .spark-btn:hover {
+    background: #fef3c7;
+    transform: translateY(-1px);
+  }
+
+  .spark-btn.correct {
+    background: #dcfce7;
+    border-color: #16a34a;
+    color: #14532d;
+  }
+
+  .spark-btn.wrong {
+    background: #ffe4e6;
+    border-color: #e11d48;
+    color: #881337;
+  }
+
+  .spark-feedback {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 0.93rem;
+    line-height: 1.5;
+    display: none;
+    font-weight: 600;
+  }
+
+  .spark-feedback.show-correct {
+    display: block;
+    background: #ecfdf5;
+    border-left: 4px solid #10b981;
+    color: #065f46;
+  }
+
+  .spark-feedback.show-wrong {
+    display: block;
+    background: #fff1f2;
+    border-left: 4px solid #f43f5e;
+    color: #9f1239;
+  }
+
+  /* MENU 3 (BERMAIN) & MENU 4 (BERLATIH) STYLES */
+  .quiz-header-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    padding: 14px 18px;
+    border-radius: 16px;
+    margin-bottom: 18px;
+  }
+
+  .score-badge {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.98rem;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+  }
+
+  .progress-badge {
+    background: #eef2ff;
+    color: var(--primary-dark);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .quiz-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 14px;
+  }
+
+  .question-text {
+    font-size: 1.12rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .option-grid {
+    display: grid;
+    gap: 11px;
+  }
+
+  .option-btn {
+    width: 100%;
+    text-align: left;
+    padding: 14px 18px;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    background: #eef2ff;
+    border-color: var(--primary);
+    transform: translateX(3px);
+  }
+
+  .option-btn:disabled {
+    cursor: default;
+  }
+
+  .option-btn.opt-correct {
+    background: #dcfce7;
+    border-color: #16a34a;
+    color: #14532d;
+  }
+
+  .option-btn.opt-wrong {
+    background: #ffe4e6;
+    border-color: #e11d48;
+    color: #881337;
+  }
+
+  /* Ordering / Sequence Chips (Menu 3) */
+  .order-pool, .order-target {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 58px;
+    padding: 12px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+  }
+
+  .order-target {
+    background: #f0f9ff;
+    border: 2px dashed #0284c7;
+  }
+
+  .order-pool {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+  }
+
+  .order-chip {
+    background: #ffffff;
+    border: 2px solid #6366f1;
+    color: #1e1b4b;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(79, 70, 229, 0.12);
+    transition: transform 0.15s;
+  }
+
+  .order-chip:hover {
+    transform: translateY(-2px);
+    background: #eef2ff;
+  }
+
+  /* Short Answer Input Row */
+  .short-answer-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .short-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 13px 16px;
+    border: 2px solid #94a3b8;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .short-input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .btn-submit-ans {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    padding: 13px 22px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.98rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  }
+
+  .btn-submit-ans:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-retry {
+    background: #f59e0b;
+    color: #ffffff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+
+  /* Checkbox Complex MCQ (Menu 4) */
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+
+  .checkbox-row:hover {
+    background: #eef2ff;
+    border-color: var(--primary);
+  }
+
+  .checkbox-row input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+
+  /* Matching Pairs with Arrow Canvas (Menu 4) */
+  .matching-wrapper {
+    position: relative;
+    margin-bottom: 14px;
+  }
+
+  .matching-svg-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .matching-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .match-col {
+    display: grid;
+    gap: 12px;
+  }
+
+  .match-item {
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 2px solid #cbd5e1;
+    background: #f8fafc;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s;
+  }
+
+  .match-item.selected {
+    border-color: #f59e0b;
+    background: #fef3c7;
+    transform: scale(1.02);
+  }
+
+  .match-item.matched {
+    border-color: #16a34a;
+    background: #dcfce7;
+    color: #14532d;
+    cursor: default;
+  }
+
+  /* Drag and Drop + Tap-to-Place (Menu 4) */
+  .dnd-bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    min-height: 60px;
+  }
+
+  .dnd-card {
+    padding: 10px 16px;
+    background: #ffffff;
+    border: 2px solid var(--primary);
+    color: var(--primary-dark);
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 3px 8px rgba(79, 70, 229, 0.14);
+    transition: all 0.15s;
+  }
+
+  .dnd-card.selected-card {
+    background: #fef3c7;
+    border-color: #d97706;
+    color: #92400e;
+    transform: scale(1.05);
+  }
+
+  .dnd-slots {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .dnd-slot-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #f1f5f9;
+    padding: 12px 16px;
+    border-radius: 12px;
+  }
+
+  .dnd-dropzone {
+    min-width: 170px;
+    min-height: 44px;
+    padding: 8px 14px;
+    background: #ffffff;
+    border: 2px dashed #6366f1;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+  }
+
+  .dnd-dropzone.filled {
+    border-style: solid;
+    background: #eef2ff;
+    color: #1e1b4b;
+  }
+
+  /* Feedback Box for Quiz */
+  .quiz-feedback {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.96rem;
+    line-height: 1.55;
+    font-weight: 600;
+    display: none;
+  }
+
+  .quiz-feedback.fb-ok {
+    display: block;
+    background: #ecfdf5;
+    border-left: 5px solid #10b981;
+    color: #065f46;
+  }
+
+  .quiz-feedback.fb-err {
+    display: block;
+    background: #fff1f2;
+    border-left: 5px solid #f43f5e;
+    color: #9f1239;
+  }
+
+  /* Summary Card */
+  .summary-card {
+    text-align: center;
+    background: linear-gradient(145deg, #eef2ff 0%, #f0f9ff 100%);
+    border: 2px solid #c7d2fe;
+    border-radius: 22px;
+    padding: 34px 24px;
+    margin: 14px 0;
+  }
+
+  .final-score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 16px auto;
+    box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
+  }
+
+  .nav-next:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  /* Developer Card */
+  .dev-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+    border: 2px solid #dbeafe;
+    border-radius: 20px;
+    padding: 26px;
+    margin: 16px 0;
+  }
+
+  .dev-photo-wrap {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #ffffff;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+    flex-shrink: 0;
+    background: #dbeafe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dev-photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dev-details h3 {
+    font-size: 1.4rem;
+    color: #0f172a;
+    margin-bottom: 6px;
+  }
+
+  .dev-tag {
+    display: inline-block;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+  }
+
+  /* Reference List */
+  .ref-list {
+    display: grid;
+    gap: 14px;
+    margin: 16px 0;
+  }
+
+  .ref-item {
+    background: #f8fafc;
+    border-left: 5px solid var(--secondary);
+    padding: 16px 18px;
+    border-radius: 12px;
+    line-height: 1.6;
+    font-size: 0.98rem;
+  }
+
+  /* Reflection Form */
+  .rating-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .rating-option {
+    flex: 1;
+    min-width: 130px;
+    padding: 10px 12px;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    background: #f8fafc;
+    cursor: pointer;
+    font-weight: 700;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .rating-option.selected {
+    background: #eef2ff;
+    border-color: var(--primary);
+    color: var(--primary-dark);
+  }
+
+  .btn-download {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.96rem;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+    transition: transform 0.15s;
+  }
+
+  .btn-download:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Consistent Bottom Navigation Bar */
+  .bottom-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 2px solid #f1f5f9;
+  }
+
+  .nav-btn {
+    padding: 11px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.94rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-prev {
+    background: #f1f5f9;
+    color: #334155;
+    border-color: #cbd5e1;
+  }
+
+  .nav-prev:hover {
+    background: #e2e8f0;
+  }
+
+  .nav-home {
+    background: #eef2ff;
+    color: var(--primary);
+    border-color: #c7d2fe;
+  }
+
+  .nav-home:hover {
+    background: #e0e7ff;
+  }
+
+  .nav-next {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  }
+
+  .nav-next:hover:not(:disabled) {
+    background: var(--primary-dark);
+  }
+
+  .nav-finish {
+    background: var(--accent-rose);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25);
+  }
+
+  .nav-finish:hover {
+    background: #e11d48;
+  }
+
+  /* Custom Exit Confirmation Modal & Farewell Screen */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 16px;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal-box {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 28px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+    animation: fadeIn 0.22s ease;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .farewell-card {
+    text-align: center;
+    padding: 48px 24px;
+  }
+
+  @media (max-width: 768px) {
+    body { padding-top: 84px; }
+    .app-container { padding: 20px; }
+    .login-grid, .learn-layout { grid-template-columns: 1fr; }
+    .matching-grid { gap: 36px; }
+    .global-controls { right: 10px; left: 10px; justify-content: space-between; }
+    .bottom-nav { justify-content: center; }
+    .nav-btn { flex: 1; justify-content: center; min-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- KONTROL GLOBAL POJOK KANAN ATAS -->
+  <div class="global-controls" id="globalControls">
+    <div class="audio-group">
+      <button type="button" class="btn-audio" id="btnMusicToggle" onclick="toggleBgm()">
+        <span id="musicIcon">🔇</span>
+        <span id="musicLabel">Musik: Mati</span>
+      </button>
+      <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.05" value="0.35" title="Atur Volume Musik" oninput="updateVolume(this.value)">
+    </div>
+    <button type="button" class="btn-exit-global" onclick="promptExitApp()">Keluar / Exit</button>
+  </div>
+
+  <div class="app-container">
+
+    <!-- HALAMAN AWAL (LOGIN) -->
+    <section id="screen-login" class="screen active">
+      <div class="login-grid">
+        <div>
+          <span class="badge-pill">📘 Matematika SMA • Kelas X Fase E</span>
+          <h1>Logaritma</h1>
+          <p class="subtitle" style="margin-bottom: 20px;">
+            Selamat datang di Media Pembelajaran Interaktif! Mari eksplorasi hubungan kebalikan antara bilangan berpangkat dan logaritma dengan cara yang visual dan menyenangkan.
+          </p>
+
+          <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label for="inputNama">Nama Lengkap Siswa <span style="color:#e11d48">*</span></label>
+              <input type="text" id="inputNama" class="form-control" placeholder="Contoh: Rina Sari" required>
+            </div>
+            <div class="form-group">
+              <label for="inputKelas">Kelas <span style="color:#e11d48">*</span></label>
+              <input type="text" id="inputKelas" class="form-control" placeholder="Contoh: X-1 atau X Merdeka 2" required>
+            </div>
+            <p class="error-text" id="loginError">Mohon isi Nama Siswa dan Kelas terlebih dahulu.</p>
+            <button type="submit" class="btn-primary-lg">Mulai Belajar 🚀</button>
+          </form>
+        </div>
+
+        <div class="illustration-card">
+          <svg viewBox="0 0 320 250" width="100%" height="230" aria-label="Ilustrasi Grafik Eksponen dan Logaritma">
+            <rect x="10" y="10" width="300" height="230" rx="16" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"/>
+            <line x1="40" y1="190" x2="290" y2="190" stroke="#94a3b8" stroke-width="2"/>
+            <line x1="80" y1="30" x2="80" y2="215" stroke="#94a3b8" stroke-width="2"/>
+            <line x1="55" y1="215" x2="265" y2="35" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="6,5"/>
+            <text x="235" y="45" fill="#64748b" font-size="11" font-weight="bold">y = x</text>
+            <path d="M 45 186 Q 110 182 145 125 T 185 35" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
+            <text x="190" y="48" fill="#d97706" font-size="12" font-weight="bold">y = aˣ</text>
+            <path d="M 86 212 Q 95 140 155 112 T 280 82" fill="none" stroke="#4f46e5" stroke-width="3.5" stroke-linecap="round"/>
+            <text x="215" y="104" fill="#4f46e5" font-size="12" font-weight="bold">y = ᵃlog x</text>
+            <circle cx="80" cy="160" r="4.5" fill="#f59e0b"/>
+            <text x="42" y="158" fill="#b45309" font-size="10" font-weight="bold">(0,1)</text>
+            <circle cx="115" cy="190" r="4.5" fill="#4f46e5"/>
+            <text x="108" y="206" fill="#3730a3" font-size="10" font-weight="bold">(1,0)</text>
+            <rect x="42" y="20" width="128" height="26" rx="8" fill="#eef2ff"/>
+            <text x="52" y="37" fill="#3730a3" font-size="11" font-weight="bold">aᶜ = b ⇔ ᵃlog b = c</text>
+          </svg>
+          <p style="font-size:0.86rem; color:#475569; font-weight:600; margin-top:6px;">
+            Logaritma adalah invers (kebalikan) dari fungsi eksponen
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HALAMAN MENU UTAMA (HOME) -->
+    <section id="screen-home" class="screen">
+      <div class="welcome-banner">
+        <div>
+          <span style="font-size:0.85rem; opacity:0.9; font-weight:600;">Matematika SMA Kelas X Fase E</span>
+          <h2>Halo, <span id="displayNama">Siswa</span>! 👋</h2>
+          <p style="opacity:0.95; font-size:0.95rem;">Kelas: <strong id="displayKelas">-</strong> • Pilih menu pembelajaran di bawah ini:</p>
+        </div>
+        <div style="background:rgba(255,255,255,0.18); padding:10px 16px; border-radius:14px; font-weight:700; font-size:0.9rem;">
+          Topik: Logaritma
+        </div>
+      </div>
+
+      <div class="menu-grid">
+        <button type="button" class="menu-card" onclick="goToMenu('menu1')">
+          <div class="menu-icon c-1">🎯</div>
+          <div class="menu-info">
+            <h3>1. Tujuan Pembelajaran</h3>
+            <p>Target capaian belajar logaritma</p>
+          </div>
+        </button>
+
+        <button type="button" class="menu-card" onclick="goToMenu('menu2')">
+          <div class="menu-icon c-2">📖</div>
+          <div class="menu-info">
+            <h3>2. Belajar</h3>
+            <p>5 halaman konsep dan sifat logaritma</p>
+          </div>
+        </button>
+
+        <button type="button" class="menu-card" onclick="goToMenu('menu3')">
+          <div class="menu-icon c-3">🎮</div>
+          <div class="menu-info">
+            <h3>3. Bermain</h3>
+            <p>Kuis permainan interaktif (5 tantangan)</p>
+          </div>
+        </button>
+
+        <button type="button" class="menu-card" onclick="goToMenu('menu4')">
+          <div class="menu-icon c-4">✍️</div>
+          <div class="menu-info">
+            <h3>4. Berlatih</h3>
+            <p>6 variasi evaluasi acak dan pembahasan</p>
+          </div>
+        </button>
+
+        <button type="button" class="menu-card" onclick="goToMenu('menu5')">
+          <div class="menu-icon c-5">💭</div>
+          <div class="menu-info">
+            <h3>5. Refleksi</h3>
+            <p>Evaluasi diri dan unduh catatan</p>
+          </div>
+        </button>
+
+        <button type="button" class="menu-card" onclick="goToMenu('menu6')">
+          <div class="menu-icon c-6">👨‍🏫</div>
+          <div class="menu-info">
+            <h3>6. Pengembang</h3>
+            <p>Profil guru penyusun media</p>
+          </div>
+        </button>
+
+        <button type="button" class="menu-card" onclick="goToMenu('menu7')">
+          <div class="menu-icon c-7">📚</div>
+          <div class="menu-info">
+            <h3>7. Referensi</h3>
+            <p>Daftar pustaka dan sumber buku</p>
+          </div>
+        </button>
+      </div>
+
+      <div class="home-footer">
+        <button type="button" class="btn-close-app" onclick="promptExitApp()">🚪 Tutup / Keluar Aplikasi</button>
+      </div>
+    </section>
+
+    <!-- MENU 1: TUJUAN PEMBELAJARAN -->
+    <section id="screen-menu1" class="screen">
+      <span class="badge-pill">Menu 1 dari 7</span>
+      <h2>🎯 Tujuan Pembelajaran</h2>
+      <p class="subtitle">Setelah mempelajari materi <strong>Logaritma</strong> pada media pembelajaran ini, murid diharapkan mampu:</p>
+
+      <div class="tp-list">
+        <div class="tp-item">
+          <div class="tp-num">1</div>
+          <div>
+            <h3 style="margin-bottom:4px; color:#1e1b4b;">Menggeneralisasi dan Menurunkan Sifat-Sifat Logaritma</h3>
+            <p style="line-height:1.6; color:#334155;">
+              Murid mampu menggeneralisasi dan menurunkan sifat-sifat logaritma (perkalian, pembagian, perpangkatan, dan perubahan basis) berdasarkan sifat-sifat bilangan berpangkat.
+            </p>
+          </div>
+        </div>
+
+        <div class="tp-item">
+          <div class="tp-num">2</div>
+          <div>
+            <h3 style="margin-bottom:4px; color:#1e1b4b;">Menerapkan Sifat-Sifat Logaritma</h3>
+            <p style="line-height:1.6; color:#334155;">
+              Murid mampu menerapkan sifat-sifat logaritma untuk menyederhanakan ekspresi logaritma dan menghitung nilai bentuk logaritma yang lebih kompleks secara efisien dan akurat.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div style="width:120px;"></div>
+        <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+        <button type="button" class="nav-btn nav-next" onclick="goToMenu('menu2')">Selanjutnya →</button>
+      </div>
+    </section>
+
+    <!-- MENU 2: BELAJAR (5 HALAMAN LENGKAP) -->
+    <section id="screen-menu2" class="screen">
+      <span class="badge-pill">Menu 2 dari 7 • Materi Interaktif</span>
+      <h2>📖 Belajar: Konsep dan Sifat Logaritma</h2>
+
+      <div class="learn-stepper">
+        <button type="button" class="step-pill active" id="step-pill-1" onclick="showLearnPage(1)">1. Konsep Dasar</button>
+        <button type="button" class="step-pill" id="step-pill-2" onclick="showLearnPage(2)">2. Sifat Perkalian</button>
+        <button type="button" class="step-pill" id="step-pill-3" onclick="showLearnPage(3)">3. Pembagian dan Pangkat</button>
+        <button type="button" class="step-pill" id="step-pill-4" onclick="showLearnPage(4)">4. Perubahan Basis</button>
+        <button type="button" class="step-pill" id="step-pill-5" onclick="showLearnPage(5)">5. Penyederhanaan</button>
+      </div>
+
+      <!-- HALAMAN BELAJAR 1 -->
+      <div class="learn-page active" id="learn-page-1">
+        <div class="learn-layout">
+          <div>
+            <h3 style="color:#1e1b4b; margin-bottom:8px;">Halaman 1: Konsep Dasar Logaritma</h3>
+            <p style="line-height:1.65; margin-bottom:10px;">
+              Logaritma merupakan <strong>operasi kebalikan (invers) dari perpangkatan</strong>. Jika kita mencari nilai pangkat yang menghasilkan suatu bilangan tertentu, kita menggunakan logaritma.
+            </p>
+            <div class="math-box">
+              <div class="math-formula">a<sup>c</sup> = b &nbsp;⇔&nbsp; <sup>a</sup>log b = c</div>
+              <p style="font-size:0.92rem; color:#334155; margin-top:6px;">
+                <strong>Syarat wajib:</strong><br>
+                • Basis <span class="math-expr">a &gt; 0</span> dan <span class="math-expr">a ≠ 1</span><br>
+                • Numerus <span class="math-expr">b &gt; 0</span> (selalu bilangan positif)<br>
+                • Contoh: Karena <span class="math-expr">2<sup>3</sup> = 8</span>, maka <span class="math-expr"><sup>2</sup>log 8 = 3</span>.
+              </p>
+            </div>
+          </div>
+
+          <div class="svg-diagram-box">
+            <svg viewBox="0 0 280 200" width="100%" height="185" aria-label="Diagram Transformasi Pangkat ke Logaritma">
+              <rect x="8" y="8" width="264" height="184" rx="14" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"/>
+              <rect x="24" y="26" width="232" height="48" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+              <text x="140" y="55" text-anchor="middle" fill="#92400e" font-size="16" font-weight="bold">Bentuk Pangkat: 3⁴ = 81</text>
+              <path d="M 140 78 L 140 116" stroke="#4f46e5" stroke-width="3" stroke-linecap="round"/>
+              <polygon points="140,122 133,111 147,111" fill="#4f46e5"/>
+              <text x="195" y="103" fill="#4f46e5" font-size="11" font-weight="bold">Invers / Kebalikan</text>
+              <rect x="24" y="126" width="232" height="50" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+              <text x="140" y="156" text-anchor="middle" fill="#1e1b4b" font-size="16" font-weight="bold">Logaritma: ³log 81 = 4</text>
+            </svg>
+            <div class="svg-caption">Basis (3) tetap di posisi basis, hasil pangkat (81) menjadi numerus.</div>
+          </div>
+        </div>
+
+        <div class="spark-box">
+          <div class="spark-title">💡 Pertanyaan Pemantik 1</div>
+          <p>Diketahui bentuk perpangkatan <span class="math-expr">5<sup>3</sup> = 125</span>. Jika diubah ke dalam bentuk logaritma, penulisan yang tepat adalah...</p>
+          <div class="spark-options">
+            <button type="button" class="spark-btn" onclick="checkSpark(1, this, false, 'Belum tepat. Ingat, angka 5 adalah basis dan 125 adalah numerus, sedangkan pangkat 3 menjadi hasilnya.')">A. ³log 125 = 5</button>
+            <button type="button" class="spark-btn" onclick="checkSpark(1, this, true, 'Tepat sekali! Basis 5 tetap menjadi basis, 125 menjadi numerus, dan pangkat 3 adalah hasil logaritmanya.')">B. ⁵log 125 = 3</button>
+            <button type="button" class="spark-btn" onclick="checkSpark(1, this, false, 'Belum tepat. Numerus tidak boleh bernilai 3 karena 5 pangkat 125 bukan 3.')">C. ⁵log 3 = 125</button>
+          </div>
+          <div class="spark-feedback" id="spark-fb-1"></div>
+        </div>
+
+        <div class="bottom-nav">
+          <button type="button" class="nav-btn nav-prev" onclick="goToMenu('menu1')">← Sebelumnya (Ke Tujuan)</button>
+          <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+          <button type="button" class="nav-btn nav-next" onclick="showLearnPage(2)">Selanjutnya →</button>
+        </div>
+      </div>
+
+      <!-- HALAMAN BELAJAR 2 -->
+      <div class="learn-page" id="learn-page-2">
+        <div class="learn-layout">
+          <div>
+            <h3 style="color:#1e1b4b; margin-bottom:8px;">Halaman 2: Sifat Identitas dan Perkalian Logaritma</h3>
+            <p style="line-height:1.65; margin-bottom:10px;">
+              Dari sifat bilangan berpangkat <span class="math-expr">a<sup>0</sup> = 1</span>, <span class="math-expr">a<sup>1</sup> = a</span>, dan <span class="math-expr">a<sup>m</sup> · a<sup>n</sup> = a<sup>m+n</sup></span>, kita memperoleh sifat dasar berikut:
+            </p>
+            <div class="math-box">
+              <div class="math-formula"><sup>a</sup>log 1 = 0 &nbsp;&nbsp;|&nbsp;&nbsp; <sup>a</sup>log a = 1</div>
+              <div class="math-formula"><sup>a</sup>log (b × c) = <sup>a</sup>log b + <sup>a</sup>log c</div>
+              <p style="font-size:0.92rem; color:#334155; margin-top:6px;">
+                Perkalian di dalam numerus dapat dipecah menjadi <strong>penjumlahan</strong> dua logaritma dengan basis yang sama.
+              </p>
+            </div>
+          </div>
+
+          <div class="svg-diagram-box">
+            <svg viewBox="0 0 280 200" width="100%" height="185" aria-label="Diagram Sifat Perkalian Logaritma">
+              <rect x="8" y="8" width="264" height="184" rx="14" fill="#ffffff" stroke="#bae6fd" stroke-width="2"/>
+              <rect x="55" y="22" width="170" height="42" rx="10" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+              <text x="140" y="48" text-anchor="middle" fill="#0369a1" font-size="15" font-weight="bold">²log (4 × 8)</text>
+              <line x1="115" y1="64" x2="75" y2="108" stroke="#0284c7" stroke-width="2.5"/>
+              <line x1="165" y1="64" x2="205" y2="108" stroke="#0284c7" stroke-width="2.5"/>
+              <rect x="22" y="110" width="102" height="40" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+              <text x="73" y="135" text-anchor="middle" fill="#166534" font-size="14" font-weight="bold">²log 4 = 2</text>
+              <text x="140" y="136" text-anchor="middle" fill="#0f172a" font-size="18" font-weight="bold">+</text>
+              <rect x="156" y="110" width="102" height="40" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+              <text x="207" y="135" text-anchor="middle" fill="#166534" font-size="14" font-weight="bold">²log 8 = 3</text>
+              <text x="140" y="176" text-anchor="middle" fill="#1e293b" font-size="13" font-weight="bold">Total = 2 + 3 = 5</text>
+            </svg>
+            <div class="svg-caption">Perkalian numerus (4 × 8) berubah menjadi penjumlahan logaritma.</div>
+          </div>
+        </div>
+
+        <div class="spark-box">
+          <div class="spark-title">💡 Pertanyaan Pemantik 2</div>
+          <p>Berapakah nilai dari <span class="math-expr"><sup>6</sup>log 4 + <sup>6</sup>log 9</span> menggunakan sifat perkalian logaritma?</p>
+          <div class="spark-options">
+            <button type="button" class="spark-btn" onclick="checkSpark(2, this, false, 'Kurang tepat. Gunakan sifat ⁶log 4 + ⁶log 9 = ⁶log (4 × 9) = ⁶log 36.')">A. 1</button>
+            <button type="button" class="spark-btn" onclick="checkSpark(2, this, true, 'Benar! ⁶log 4 + ⁶log 9 = ⁶log (4 × 9) = ⁶log 36 = 2, karena 6² = 36.')">B. 2</button>
+            <button type="button" class="spark-btn" onclick="checkSpark(2, this, false, 'Belum tepat. 6 pangkat 6 jauh lebih besar dari 36.')">C. 6</button>
+          </div>
+          <div class="spark-feedback" id="spark-fb-2"></div>
+        </div>
+
+        <div class="bottom-nav">
+          <button type="button" class="nav-btn nav-prev" onclick="showLearnPage(1)">← Sebelumnya</button>
+          <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+          <button type="button" class="nav-btn nav-next" onclick="showLearnPage(3)">Selanjutnya →</button>
+        </div>
+      </div>
+
+      <!-- HALAMAN BELAJAR 3 -->
+      <div class="learn-page" id="learn-page-3">
+        <div class="learn-layout">
+          <div>
+            <h3 style="color:#1e1b4b; margin-bottom:8px;">Halaman 3: Sifat Pembagian dan Perpangkatan</h3>
+            <p style="line-height:1.65; margin-bottom:10px;">
+              Sejalan dengan aturan pembagian dan pangkat pada eksponen (<span class="math-expr">a<sup>m</sup> ÷ a<sup>n</sup> = a<sup>m−n</sup></span> dan <span class="math-expr">(a<sup>m</sup>)<sup>n</sup> = a<sup>m·n</sup></span>), berlaku dua sifat penting:
+            </p>
+            <div class="math-box">
+              <div class="math-formula">
+                <sup>a</sup>log <span class="frac"><span>b</span><span>c</span></span> = <sup>a</sup>log b − <sup>a</sup>log c
+              </div>
+              <div class="math-formula">
+                <sup>a</sup>log (b<sup>n</sup>) = n · <sup>a</sup>log b
+              </div>
+              <p style="font-size:0.92rem; color:#334155; margin-top:6px;">
+                Pembagian numerus menjadi <strong>pengurangan</strong>, sedangkan pangkat pada numerus dapat turun ke depan sebagai pengali.
+              </p>
+            </div>
+          </div>
+
+          <div class="svg-diagram-box">
+            <svg viewBox="0 0 280 200" width="100%" height="185" aria-label="Diagram Sifat Pangkat Numerus">
+              <rect x="8" y="8" width="264" height="184" rx="14" fill="#ffffff" stroke="#fbcfe8" stroke-width="2"/>
+              <rect x="36" y="24" width="208" height="46" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+              <text x="140" y="52" text-anchor="middle" fill="#9d174d" font-size="16" font-weight="bold">²log (8⁵)</text>
+              <path d="M 164 42 C 210 42, 210 112, 92 126" fill="none" stroke="#db2777" stroke-width="2.5" stroke-dasharray="4,3"/>
+              <polygon points="86,127 97,120 98,132" fill="#db2777"/>
+              <text x="216" y="88" fill="#be185d" font-size="11" font-weight="bold">Pangkat turun</text>
+              <rect x="36" y="114" width="208" height="48" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+              <text x="140" y="143" text-anchor="middle" fill="#1e1b4b" font-size="16" font-weight="bold">5 × ²log 8 = 5 × 3 = 15</text>
+            </svg>
+            <div class="svg-caption">Eksponen numerus melompat ke depan sebagai koefisien pengali.</div>
+          </div>
+        </div>
+
+        <div class="spark-box">
+          <div class="spark-title">💡 Pertanyaan Pemantik 3</div>
+          <p>Sederhanakan nilai dari <span class="math-expr"><sup>3</sup>log 54 − <sup>3</sup>log 2</span>!</p>
+          <div class="spark-options">
+            <button type="button" class="spark-btn" onclick="checkSpark(3, this, false, 'Belum tepat. Bagi numerusnya terlebih dahulu: 54 dibagi 2 adalah 27.')">A. 2</button>
+            <button type="button" class="spark-btn" onclick="checkSpark(3, this, true, 'Hebat! ³log 54 − ³log 2 = ³log (54 ÷ 2) = ³log 27 = ³log (3³) = 3.')">B. 3</button>
+            <button type="button" class="spark-btn" onclick="checkSpark(3, this, false, 'Kurang tepat. Ingat sifat pembagian: ³log (54 ÷ 2) = ³log 27, bukan 27.')">C. 27</button>
+          </div>
+          <div class="spark-feedback" id="spark-fb-3"></div>
+        </div>
+
+        <div class="bottom-nav">
+          <button type="button" class="nav-btn nav-prev" onclick="showLearnPage(2)">← Sebelumnya</button>
+          <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+          <button type="button" class="nav-btn nav-next" onclick="showLearnPage(4)">Selanjutnya →</button>
+        </div>
+      </div>
+
+      <!-- HALAMAN BELAJAR 4 -->
+      <div class="learn-page" id="learn-page-4">
+        <div class="learn-layout">
+          <div>
+            <h3 style="color:#1e1b4b; margin-bottom:8px;">Halaman 4: Sifat Perubahan Basis dan Sifat Berantai</h3>
+            <p style="line-height:1.65; margin-bottom:10px;">
+              Ketika dua logaritma memiliki basis berbeda atau saling tersambung, kita dapat mengubah basisnya menggunakan sifat berikut:
+            </p>
+            <div class="math-box">
+              <div class="math-formula">
+                <sup>a</sup>log b = <span class="frac"><span><sup>c</sup>log b</span><span><sup>c</sup>log a</span></span> = <span class="frac"><span>1</span><span><sup>b</sup>log a</span></span>
+              </div>
+              <div class="math-formula">
+                <sup>a</sup>log b · <sup>b</sup>log c = <sup>a</sup>log c
+              </div>
+              <p style="font-size:0.92rem; color:#334155; margin-top:6px;">
+                Pada perkalian berantai, jika numerus pertama sama dengan basis kedua (<span class="math-expr">b</span>), keduanya saling menyambung menjadi <span class="math-expr"><sup>a</sup>log c</span>.
+              </p>
+            </div>
+          </div>
+
+          <div class="svg-diagram-box">
+            <svg viewBox="0 0 280 200" width="100%" height="185" aria-label="Diagram Sifat Berantai Logaritma">
+              <rect x="8" y="8" width="264" height="184" rx="14" fill="#ffffff" stroke="#fde68a" stroke-width="2"/>
+              <rect x="20" y="34" width="96" height="44" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+              <text x="68" y="61" text-anchor="middle" fill="#92400e" font-size="15" font-weight="bold">²log 5</text>
+              <text x="140" y="61" text-anchor="middle" fill="#0f172a" font-size="18" font-weight="bold">×</text>
+              <rect x="164" y="34" width="96" height="44" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+              <text x="212" y="61" text-anchor="middle" fill="#92400e" font-size="15" font-weight="bold">⁵log 8</text>
+              <path d="M 88 34 Q 140 12 192 34" fill="none" stroke="#10b981" stroke-width="2.5"/>
+              <text x="140" y="22" text-anchor="middle" fill="#059669" font-size="11" font-weight="bold">Sama (5) → Sambung</text>
+              <rect x="44" y="114" width="192" height="48" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+              <text x="140" y="143" text-anchor="middle" fill="#14532d" font-size="15" font-weight="bold">Hasil: ²log 8 = 3</text>
+            </svg>
+            <div class="svg-caption">Numerus 5 bertemu basis 5 sehingga menyatu menjadi ²log 8.</div>
+          </div>
+        </div>
+
+        <div class="spark-box">
+          <div class="spark-title">💡 Pertanyaan Pemantik 4</div>
+          <p>Hitunglah nilai dari <span class="math-expr"><sup>3</sup>log 7 · <sup>7</sup>log 9</span>!</p>
+          <div class="spark-options">
+            <button type="button" class="spark-btn" onclick="checkSpark(4, this, true, 'Sempurna! Angka 7 saling menyambung sehingga tersisa ³log 9 = 2.')">A. 2</button>
+            <button type="button" class="spark-btn" onclick="checkSpark(4, this, false, 'Belum tepat. Sifat berantai menyisakan ³log 9, bukan 3.')">B. 3</button>
+            <button type="button" class="spark-btn" onclick="checkSpark(4, this, false, 'Kurang tepat. Ingat ³log 9 berarti 3 pangkat berapa yang hasilnya 9.')">C. 7</button>
+          </div>
+          <div class="spark-feedback" id="spark-fb-4"></div>
+        </div>
+
+        <div class="bottom-nav">
+          <button type="button" class="nav-btn nav-prev" onclick="showLearnPage(3)">← Sebelumnya</button>
+          <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+          <button type="button" class="nav-btn nav-next" onclick="showLearnPage(5)">Selanjutnya →</button>
+        </div>
+      </div>
+
+      <!-- HALAMAN BELAJAR 5 -->
+      <div class="learn-page" id="learn-page-5">
+        <div class="learn-layout">
+          <div>
+            <h3 style="color:#1e1b4b; margin-bottom:8px;">Halaman 5: Penyederhanaan Ekspresi Kompleks</h3>
+            <p style="line-height:1.65; margin-bottom:10px;">
+              Untuk menyederhanakan bentuk logaritma yang mengandung pangkat di basis maupun numerus, gunakan sifat umum perpangkatan basis dan numerus:
+            </p>
+            <div class="math-box">
+              <div class="math-formula">
+                <sup>a<sup>m</sup></sup>log (b<sup>n</sup>) = <span class="frac"><span>n</span><span>m</span></span> · <sup>a</sup>log b
+              </div>
+              <p style="font-size:0.92rem; color:#334155; margin-top:6px;">
+                <strong>Contoh Penerapan:</strong><br>
+                Hitung <span class="math-expr"><sup>8</sup>log 32</span>:<br>
+                Ubah menjadi basis prima 2: <span class="math-expr"><sup>2<sup>3</sup></sup>log (2<sup>5</sup>) = <span class="frac"><span>5</span><span>3</span></span> · <sup>2</sup>log 2 = <span class="frac"><span>5</span><span>3</span></span></span>.
+              </p>
+            </div>
+          </div>
+
+          <div class="svg-diagram-box">
+            <svg viewBox="0 0 280 200" width="100%" height="185" aria-label="Diagram Pangkat Basis dan Numerus">
+              <rect x="8" y="8" width="264" height="184" rx="14" fill="#ffffff" stroke="#ddd6fe" stroke-width="2"/>
+              <rect x="32" y="20" width="216" height="38" rx="9" fill="#f3e8ff" stroke="#9333ea" stroke-width="1.5"/>
+              <text x="140" y="44" text-anchor="middle" fill="#6b21a8" font-size="13" font-weight="bold">1. Ubah ke Bilangan Berpangkat Prima</text>
+              <rect x="32" y="72" width="216" height="38" rx="9" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+              <text x="140" y="96" text-anchor="middle" fill="#3730a3" font-size="13" font-weight="bold">2. Tarik Rasio Pangkat (n / m)</text>
+              <rect x="32" y="124" width="216" height="46" rx="9" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+              <text x="140" y="152" text-anchor="middle" fill="#14532d" font-size="14" font-weight="bold">3. Selesaikan: ⁹log 27 = 3/2</text>
+            </svg>
+            <div class="svg-caption">Tiga langkah cepat menghitung logaritma bilangan berpangkat.</div>
+          </div>
+        </div>
+
+        <div class="spark-box">
+          <div class="spark-title">💡 Pertanyaan Pemantik 5</div>
+          <p>Dengan mengubah ke bilangan berpangkat basis 2, berapakah nilai dari <span class="math-expr"><sup>4</sup>log 8</span>?</p>
+          <div class="spark-options">
+            <button type="button" class="spark-btn" onclick="checkSpark(5, this, false, 'Terbalik. 4 = 2² (penyebut) dan 8 = 2³ (pembilang), sehingga hasilnya 3/2.')">A. 2/3</button>
+            <button type="button" class="spark-btn" onclick="checkSpark(5, this, true, 'Luar biasa! ⁴log 8 = ²²log 2³ = (3/2) · ²log 2 = 3/2.')">B. 3/2</button>
+            <button type="button" class="spark-btn" onclick="checkSpark(5, this, false, 'Belum tepat. 4 pangkat 2 adalah 16, bukan 8.')">C. 2</button>
+          </div>
+          <div class="spark-feedback" id="spark-fb-5"></div>
+        </div>
+
+        <div class="bottom-nav">
+          <button type="button" class="nav-btn nav-prev" onclick="showLearnPage(4)">← Sebelumnya</button>
+          <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+          <button type="button" class="nav-btn nav-next" onclick="goToMenu('menu3')">Selanjutnya (Ke Bermain) →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MENU 3: BERMAIN (5 SOAL PERMAINAN INTERAKTIF) -->
+    <section id="screen-menu3" class="screen">
+      <span class="badge-pill">Menu 3 dari 7 • Zona Permainan</span>
+      <h2>🎮 Bermain: Tantangan Cepat Logaritma</h2>
+
+      <div id="gameActiveArea">
+        <div class="quiz-header-bar">
+          <span class="progress-badge" id="gameProgressText">Tantangan 1 dari 5</span>
+          <span style="font-size:0.88rem; color:#475569; font-weight:600;">Benar: +5 Poin | Salah: -1 Poin</span>
+          <span class="score-badge">⭐ Skor: <span id="gameScoreDisplay">0</span></span>
+        </div>
+
+        <div class="quiz-card" id="gameQuestionContainer"></div>
+
+        <div class="bottom-nav">
+          <button type="button" class="nav-btn nav-prev" id="gamePrevBtn" onclick="gamePrevStep()">← Sebelumnya</button>
+          <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+          <button type="button" class="nav-btn nav-next" id="gameNextBtn" onclick="gameNextStep()" disabled>Selanjutnya →</button>
+        </div>
+      </div>
+
+      <div id="gameSummaryArea" style="display:none;">
+        <div class="summary-card">
+          <div style="font-size:3rem;">🏆</div>
+          <h3 style="font-size:1.5rem; color:#0f172a; margin-top:8px;">Permainan Selesai!</h3>
+          <p class="subtitle" style="margin-top:6px;">
+            Pemain: <strong id="gameSumName">-</strong> • Kelas: <strong id="gameSumClass">-</strong>
+          </p>
+          <div class="final-score-circle">
+            <span style="font-size:0.82rem; opacity:0.9; font-weight:700;">SKOR AKHIR</span>
+            <span style="font-size:2.2rem; font-weight:800;" id="gameSumScore">0</span>
+          </div>
+          <p style="color:#334155; font-weight:600; max-width:460px; margin:0 auto 22px;">
+            Keren! Kamu telah menaklukkan seluruh 5 tantangan permainan logaritma. Siap menguji kemampuanmu di sesi Berlatih?
+          </p>
+          <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center;">
+            <button type="button" class="nav-btn nav-prev" onclick="initGame()">🔄 Main Lagi</button>
+            <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+            <button type="button" class="nav-btn nav-next" onclick="goToMenu('menu4')">Selanjutnya (Ke Berlatih) →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MENU 4: BERLATIH (6 SOAL EVALUASI ACAK) -->
+    <section id="screen-menu4" class="screen">
+      <span class="badge-pill">Menu 4 dari 7 • Evaluasi Interaktif</span>
+      <h2>✍️ Berlatih: Uji Pemahaman Logaritma</h2>
+
+      <div id="practiceActiveArea">
+        <div class="quiz-header-bar">
+          <span class="progress-badge" id="pracProgressText">Soal 1 dari 6</span>
+          <span style="font-size:0.88rem; color:#475569; font-weight:600;">Benar: +10 Poin | Salah: -3 Poin</span>
+          <span class="score-badge">🏅 Skor: <span id="pracScoreDisplay">0</span></span>
+        </div>
+
+        <div class="quiz-card" id="pracQuestionContainer"></div>
+
+        <div class="bottom-nav">
+          <button type="button" class="nav-btn nav-prev" id="pracPrevBtn" onclick="pracPrevStep()">← Sebelumnya</button>
+          <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+          <button type="button" class="nav-btn nav-next" id="pracNextBtn" onclick="pracNextStep()" disabled>Selanjutnya →</button>
+        </div>
+      </div>
+
+      <div id="practiceSummaryArea" style="display:none;">
+        <div class="summary-card">
+          <div style="font-size:3rem;">🎓</div>
+          <h3 style="font-size:1.5rem; color:#0f172a; margin-top:8px;">Latihan Selesai!</h3>
+          <p class="subtitle" style="margin-top:6px;">
+            Nama Siswa: <strong id="pracSumName">-</strong> • Kelas: <strong id="pracSumClass">-</strong>
+          </p>
+          <div class="final-score-circle">
+            <span style="font-size:0.82rem; opacity:0.9; font-weight:700;">SKOR AKHIR</span>
+            <span style="font-size:2.2rem; font-weight:800;" id="pracSumScore">0</span>
+          </div>
+          <p style="color:#334155; font-weight:600; max-width:480px; margin:0 auto 22px;">
+            Selamat! Kamu telah menyelesaikan ke-6 variasi soal evaluasi logaritma. Mari lanjutkan ke halaman Refleksi untuk mencatat hasil belajarmu.
+          </p>
+          <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center;">
+            <button type="button" class="nav-btn nav-prev" onclick="initPractice()">🔄 Ulangi Latihan Acak</button>
+            <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+            <button type="button" class="nav-btn nav-next" onclick="goToMenu('menu5')">Selanjutnya (Ke Refleksi) →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MENU 5: REFLEKSI -->
+    <section id="screen-menu5" class="screen">
+      <span class="badge-pill">Menu 5 dari 7</span>
+      <h2>💭 Refleksi Pembelajaran</h2>
+      <p class="subtitle" style="margin-bottom:16px;">Tuliskan pemahaman dan perasaanmu setelah mempelajari materi Logaritma hari ini, lalu unduh hasilnya sebagai catatan belajar.</p>
+
+      <div class="form-group">
+        <label>Seberapa paham kamu terhadap materi Logaritma hari ini?</label>
+        <div class="rating-group" id="ratingGroup">
+          <div class="rating-option selected" onclick="selectRating(this, 'Sangat Paham')">😄 Sangat Paham</div>
+          <div class="rating-option" onclick="selectRating(this, 'Cukup Paham')">🙂 Cukup Paham</div>
+          <div class="rating-option" onclick="selectRating(this, 'Perlu Latihan Lagi')">🤔 Perlu Latihan Lagi</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="refKonsep">1. Konsep atau sifat logaritma mana yang paling mudah kamu pahami?</label>
+        <textarea id="refKonsep" class="form-control" rows="2" placeholder="Tuliskan jawabanmu di sini..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="refKesulitan">2. Bagian mana yang masih terasa menantang dan ingin kamu latih kembali?</label>
+        <textarea id="refKesulitan" class="form-control" rows="2" placeholder="Tuliskan bagian yang masih perlu dipelajari..."></textarea>
+      </div>
+
+      <button type="button" class="btn-download" onclick="downloadReflection()">💾 Simpan / Unduh Hasil Refleksi (.txt)</button>
+      <p id="refStatus" style="color:#059669; font-weight:700; font-size:0.9rem; margin-top:8px; display:none;">
+        ✅ File hasil refleksi berhasil diunduh ke perangkatmu!
+      </p>
+
+      <div class="bottom-nav">
+        <button type="button" class="nav-btn nav-prev" onclick="goToMenu('menu4')">← Sebelumnya</button>
+        <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+        <button type="button" class="nav-btn nav-next" onclick="goToMenu('menu6')">Selanjutnya →</button>
+      </div>
+    </section>
+
+    <!-- MENU 6: PENGEMBANG -->
+    <section id="screen-menu6" class="screen">
+      <span class="badge-pill">Menu 6 dari 7</span>
+      <h2>👨‍🏫 Pengembang Media</h2>
+
+      <div class="dev-card">
+        <div class="dev-photo-wrap" id="devPhotoContainer">
+          <img
+            id="devPhoto"
+            src="https://i.ibb.co.com/8Q1r3pn/Whats-App-Image-2026-11-19-at-23-56-10.jpg"
+            alt="Foto Bayu Gunarto, M.Pd"
+            onerror="handlePhotoFallback()"
+          >
+        </div>
+        <div class="dev-details">
+          <span class="dev-tag">Guru Mata Pelajaran Matematika</span>
+          <h3>Bayu Gunarto, M.Pd</h3>
+          <p style="font-size:1.05rem; font-weight:700; color:#334155; margin-bottom:6px;">🏫 SMAN 2 Kisaran</p>
+          <p style="color:#475569; line-height:1.6; max-width:540px;">
+            Media Pembelajaran Interaktif ini dirancang untuk membantu murid SMA Kelas X Fase E memahami konsep dan sifat-sifat logaritma secara mandiri, visual, dan bermakna.
+          </p>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button type="button" class="nav-btn nav-prev" onclick="goToMenu('menu5')">← Sebelumnya</button>
+        <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+        <button type="button" class="nav-btn nav-next" onclick="goToMenu('menu7')">Selanjutnya →</button>
+      </div>
+    </section>
+
+    <!-- MENU 7: REFERENSI -->
+    <section id="screen-menu7" class="screen">
+      <span class="badge-pill">Menu 7 dari 7 • Halaman Terakhir</span>
+      <h2>📚 Referensi</h2>
+      <p class="subtitle" style="margin-bottom:16px;">Sumber rujukan utama yang digunakan dalam penyusunan materi pembelajaran ini:</p>
+
+      <div class="ref-list">
+        <div class="ref-item">
+          <strong>1.</strong> Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi. (2023). <em>Matematika untuk SMA/MA/SMK/MAK Kelas X (Edisi Revisi, Kurikulum Merdeka)</em>. Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi.
+        </div>
+        <div class="ref-item">
+          <strong>2.</strong> Noormandiri, B. K. (2022). <em>Matematika SMA/MA Kelas X (Kurikulum Merdeka, ISBN 978-623-266-621-4)</em>. Jakarta: Penerbit Erlangga.
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button type="button" class="nav-btn nav-prev" onclick="goToMenu('menu6')">← Sebelumnya</button>
+        <button type="button" class="nav-btn nav-home" onclick="goToMenu('home')">🏠 Menu Utama</button>
+        <button type="button" class="nav-btn nav-finish" onclick="promptExitApp()">Selesai dan Keluar</button>
+      </div>
+    </section>
+
+    <!-- LAYAR PENUTUP / FAREWELL -->
+    <section id="screen-farewell" class="screen">
+      <div class="farewell-card">
+        <div style="font-size:4rem; margin-bottom:14px;">🌟</div>
+        <h2>Terima kasih telah belajar hari ini!</h2>
+        <p class="subtitle" style="max-width:480px; margin:10px auto 26px;">
+          Kamu sudah boleh menutup tab browser ini. Sampai jumpa pada sesi belajar Matematika berikutnya!
+        </p>
+        <button type="button" class="btn-primary-lg" style="max-width:260px;" onclick="reenterApp()">🔄 Masuk Kembali</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- MODAL KONFIRMASI KELUAR -->
+  <div class="modal-overlay" id="exitModal">
+    <div class="modal-box">
+      <div style="font-size:2.6rem; margin-bottom:10px;">🚪</div>
+      <h3 style="font-size:1.25rem; color:#0f172a; margin-bottom:8px;">Konfirmasi Keluar</h3>
+      <p style="color:#475569; line-height:1.5;">Apakah kamu yakin ingin keluar dari aplikasi?</p>
+      <div class="modal-actions">
+        <button type="button" class="nav-btn nav-prev" onclick="closeExitModal()">Batal</button>
+        <button type="button" class="nav-btn nav-finish" onclick="confirmExitApp()">Ya, Keluar</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // State Siswa
+  var studentName = '';
+  var studentClass = '';
+  var selectedUnderstanding = 'Sangat Paham';
+
+  // Web Audio API Synthesizer (Tanpa file suara luar)
+  var audioCtx = null;
+  var isMusicPlaying = false;
+  var bgmTimer = null;
+  var bgmVolume = 0.35;
+  var noteIndex = 0;
+
+  var melodyNotes = [
+    523.25, 659.25, 783.99, 659.25,
+    587.33, 698.46, 880.00, 698.46,
+    523.25, 659.25, 783.99, 1046.50,
+    783.99, 659.25, 587.33, 523.25
+  ];
+
+  function initAudioContext() {
+    if (!audioCtx) {
+      var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playClickSound() {
+    try {
+      initAudioContext();
+      if (!audioCtx) return;
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(680, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(340, audioCtx.currentTime + 0.055);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.055);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.06);
+    } catch (e) {}
+  }
+
+  function playFeedbackSound(isCorrect) {
+    try {
+      initAudioContext();
+      if (!audioCtx) return;
+      var now = audioCtx.currentTime;
+      if (isCorrect) {
+        var freqs = [523.25, 659.25, 783.99];
+        freqs.forEach(function(f, idx) {
+          var osc = audioCtx.createOscillator();
+          var gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, now + idx * 0.09);
+          gain.gain.setValueAtTime(0.14, now + idx * 0.09);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.22);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + idx * 0.09);
+          osc.stop(now + idx * 0.09 + 0.24);
+        });
+      } else {
+        var wrongFreqs = [329.63, 261.63];
+        wrongFreqs.forEach(function(f, idx) {
+          var osc = audioCtx.createOscillator();
+          var gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(f, now + idx * 0.14);
+          gain.gain.setValueAtTime(0.08, now + idx * 0.14);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.14 + 0.24);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + idx * 0.14);
+          osc.stop(now + idx * 0.14 + 0.25);
+        });
+      }
+    } catch (e) {}
+  }
+
+  function playNextBgmNote() {
+    if (!isMusicPlaying) return;
+    try {
+      initAudioContext();
+      if (!audioCtx) return;
+      var freq = melodyNotes[noteIndex % melodyNotes.length];
+      noteIndex++;
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      var targetGain = Math.max(0.001, bgmVolume * 0.16);
+      gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(targetGain, audioCtx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.42);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.45);
+    } catch (e) {}
+  }
+
+  function toggleBgm() {
+    var btn = document.getElementById('btnMusicToggle');
+    var icon = document.getElementById('musicIcon');
+    var label = document.getElementById('musicLabel');
+
+    if (!isMusicPlaying) {
+      initAudioContext();
+      isMusicPlaying = true;
+      btn.classList.add('active');
+      icon.textContent = '🎵';
+      label.textContent = 'Musik: Nyala';
+      playNextBgmNote();
+      bgmTimer = setInterval(playNextBgmNote, 480);
+    } else {
+      stopBgm();
+    }
+  }
+
+  function stopBgm() {
+    isMusicPlaying = false;
+    if (bgmTimer) {
+      clearInterval(bgmTimer);
+      bgmTimer = null;
+    }
+    var btn = document.getElementById('btnMusicToggle');
+    var icon = document.getElementById('musicIcon');
+    var label = document.getElementById('musicLabel');
+    if (btn) btn.classList.remove('active');
+    if (icon) icon.textContent = '🔇';
+    if (label) label.textContent = 'Musik: Mati';
+  }
+
+  function updateVolume(val) {
+    bgmVolume = parseFloat(val);
+  }
+
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('button') || e.target.closest('.rating-option') || e.target.closest('.match-item') || e.target.closest('.dnd-card')) {
+      playClickSound();
+    }
+  });
+
+  // Login Handler
+  function handleLogin(event) {
+    event.preventDefault();
+    var namaInput = document.getElementById('inputNama').value.trim();
+    var kelasInput = document.getElementById('inputKelas').value.trim();
+    var errorEl = document.getElementById('loginError');
+
+    if (!namaInput || !kelasInput) {
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    errorEl.style.display = 'none';
+    studentName = namaInput;
+    studentClass = kelasInput;
+
+    document.getElementById('displayNama').textContent = studentName;
+    document.getElementById('displayKelas').textContent = studentClass;
+
+    goToMenu('home');
+  }
+
+  // Navigasi Layar Utama
+  function goToMenu(menuKey) {
+    var screens = document.querySelectorAll('.screen');
+    screens.forEach(function(sc) {
+      sc.classList.remove('active');
+    });
+
+    var target = document.getElementById('screen-' + menuKey);
+    if (target) {
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    if (menuKey === 'menu2') {
+      showLearnPage(1);
+    } else if (menuKey === 'menu3') {
+      initGame();
+    } else if (menuKey === 'menu4') {
+      initPractice();
+    }
+  }
+
+  // Navigasi Sub-Halaman Menu 2 (Belajar)
+  function showLearnPage(pageNumber) {
+    var pages = document.querySelectorAll('.learn-page');
+    pages.forEach(function(p) {
+      p.classList.remove('active');
+    });
+
+    var pills = document.querySelectorAll('.step-pill');
+    pills.forEach(function(pill) {
+      pill.classList.remove('active');
+    });
+
+    var activePage = document.getElementById('learn-page-' + pageNumber);
+    var activePill = document.getElementById('step-pill-' + pageNumber);
+    if (activePage) activePage.classList.add('active');
+    if (activePill) activePill.classList.add('active');
+  }
+
+  function checkSpark(pageNum, btnEl, isCorrect, explanationText) {
+    var container = btnEl.parentElement;
+    var allBtns = container.querySelectorAll('.spark-btn');
+    allBtns.forEach(function(b) {
+      b.classList.remove('correct', 'wrong');
+    });
+
+    var fbBox = document.getElementById('spark-fb-' + pageNum);
+    fbBox.classList.remove('show-correct', 'show-wrong');
+
+    if (isCorrect) {
+      btnEl.classList.add('correct');
+      fbBox.textContent = explanationText;
+      fbBox.classList.add('show-correct');
+      playFeedbackSound(true);
+    } else {
+      btnEl.classList.add('wrong');
+      fbBox.textContent = explanationText;
+      fbBox.classList.add('show-wrong');
+      playFeedbackSound(false);
+    }
+  }
+
+  // =========================================================
+  // MENU 3: BERMAIN (5 SOAL INTERAKTIF: PG, URUTAN, ISIAN)
+  // =========================================================
+  var gameQuestions = [
+    {
+      type: 'mcq',
+      badge: 'Tipe: Pilihan Ganda Bergambar',
+      prompt: 'Perhatikan kartu transformasi di bawah ini! Nilai yang tepat untuk menggantikan tanda tanya (?) adalah...',
+      svg: '<svg viewBox="0 0 260 90" width="250" height="86"><rect x="4" y="4" width="252" height="82" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="2"/><text x="130" y="38" text-anchor="middle" fill="#1e1b4b" font-size="16" font-weight="bold">2⁵ = 32  ⇔  ²log 32 = ?</text><text x="130" y="66" text-anchor="middle" fill="#4f46e5" font-size="12" font-weight="bold">Ingat: Basis tetap, pangkat jadi hasil!</text></svg>',
+      options: ['A. 2', 'B. 5', 'C. 16', 'D. 32'],
+      correctIndex: 1,
+      explanation: 'Tepat sekali! Karena 2 pangkat 5 sama dengan 32, maka nilai dari ²log 32 adalah 5 (+5 poin).'
+    },
+    {
+      type: 'order',
+      badge: 'Tipe: Menyusun Urutan Langkah',
+      prompt: 'Susunlah langkah penyelesaian bentuk logaritma ²log 4 + ²log 8 secara berurutan dari awal hingga hasil akhir!',
+      items: ['²log 4 + ²log 8', '= ²log (4 × 8)', '= ²log 32', '= 5'],
+      explanation: 'Hebat! Urutan sifat perkalian numerus hingga hasil akhir 5 sudah tersusun sempurna (+5 poin).'
+    },
+    {
+      type: 'short',
+      badge: 'Tipe: Isian Singkat Cepat',
+      prompt: 'Hitunglah nilai dari ⁵log 1 + ⁵log 5 = ... (ketik angka saja)',
+      answer: '1',
+      explanation: 'Benar! Sesuai sifat identitas logaritma, ⁵log 1 = 0 dan ⁵log 5 = 1, sehingga 0 + 1 = 1 (+5 poin).'
+    },
+    {
+      type: 'order',
+      badge: 'Tipe: Menyusun Pernyataan Sifat',
+      prompt: 'Susun potongan rumus berikut menjadi sifat pembagian logaritma yang benar!',
+      items: ['ᵃlog (b / c)', '=', 'ᵃlog b', '− ᵃlog c'],
+      explanation: 'Sempurna! Pembagian pada numerus berubah menjadi pengurangan dua logaritma berbasiskan sama (+5 poin).'
+    },
+    {
+      type: 'short',
+      badge: 'Tipe: Isian Singkat Tantangan Terakhir',
+      prompt: 'Menggunakan sifat berantai, berapakah nilai dari ³log 5 · ⁵log 27 = ... (ketik angka saja)',
+      answer: '3',
+      explanation: 'Luar biasa! Angka 5 menyambung sehingga menjadi ³log 27 = 3 (+5 poin).'
+    }
+  ];
+
+  var gameCurrentIdx = 0;
+  var gameScore = 0;
+  var gameSolved = [];
+  var currentOrderSelected = [];
+  var currentOrderPool = [];
+
+  function initGame() {
+    gameCurrentIdx = 0;
+    gameScore = 0;
+    gameSolved = [false, false, false, false, false];
+    document.getElementById('gameScoreDisplay').textContent = '0';
+    document.getElementById('gameActiveArea').style.display = 'block';
+    document.getElementById('gameSummaryArea').style.display = 'none';
+    renderGameQuestion();
+  }
+
+  function renderGameQuestion() {
+    var q = gameQuestions[gameCurrentIdx];
+    var isDone = gameSolved[gameCurrentIdx];
+    document.getElementById('gameProgressText').textContent = 'Tantangan ' + (gameCurrentIdx + 1) + ' dari ' + gameQuestions.length;
+
+    var prevBtn = document.getElementById('gamePrevBtn');
+    prevBtn.textContent = (gameCurrentIdx === 0) ? '← Sebelumnya (Ke Belajar)' : '← Sebelumnya';
+
+    var nextBtn = document.getElementById('gameNextBtn');
+    nextBtn.textContent = (gameCurrentIdx === gameQuestions.length - 1) ? 'Lihat Skor Akhir →' : 'Selanjutnya →';
+    nextBtn.disabled = !isDone;
+
+    var container = document.getElementById('gameQuestionContainer');
+    var html = '<span class="badge-pill" style="background:#fce7f3; color:#be185d;">' + q.badge + '</span>';
+    html += '<div class="question-text">' + (gameCurrentIdx + 1) + '. ' + q.prompt + '</div>';
+
+    if (q.svg) {
+      html += '<div style="text-align:center; margin-bottom:14px;">' + q.svg + '</div>';
+    }
+
+    if (q.type === 'mcq') {
+      html += '<div class="option-grid">';
+      q.options.forEach(function(opt, idx) {
+        var cls = 'option-btn';
+        if (isDone && idx === q.correctIndex) cls += ' opt-correct';
+        html += '<button type="button" class="' + cls + '" ' + (isDone ? 'disabled' : '') + ' onclick="submitGameMcq(' + idx + ', this)">' + opt + '</button>';
+      });
+      html += '</div>';
+    } else if (q.type === 'order') {
+      if (isDone) {
+        currentOrderSelected = q.items.slice();
+        currentOrderPool = [];
+      } else {
+        currentOrderSelected = [];
+        currentOrderPool = shuffleArray(q.items.slice());
+      }
+      html += '<p style="font-size:0.88rem; color:#475569; margin-bottom:6px; font-weight:600;">Klik kartu di kotak bawah untuk menyusunnya ke kotak urutan atas:</p>';
+      html += '<div class="order-target" id="gameOrderTarget"></div>';
+      html += '<div class="order-pool" id="gameOrderPool"></div>';
+      html += '<div style="display:flex; gap:10px; flex-wrap:wrap;">';
+      html += '<button type="button" class="btn-submit-ans" id="btnCheckOrder" ' + (isDone ? 'disabled' : '') + ' onclick="submitGameOrder()">Periksa Urutan</button>';
+      html += '<button type="button" class="nav-btn nav-prev" ' + (isDone ? 'disabled' : '') + ' onclick="resetGameOrder()">Reset Urutan</button>';
+      html += '</div>';
+    } else if (q.type === 'short') {
+      html += '<div class="short-answer-row">';
+      html += '<input type="text" class="short-input" id="gameShortInput" placeholder="Ketik jawabanmu..." value="' + (isDone ? q.answer : '') + '" ' + (isDone ? 'disabled' : '') + '>';
+      html += '<button type="button" class="btn-submit-ans" id="btnCheckShort" ' + (isDone ? 'disabled' : '') + ' onclick="submitGameShort()">Cek Jawaban</button>';
+      html += '</div>';
+    }
+
+    html += '<div class="quiz-feedback ' + (isDone ? 'fb-ok' : '') + '" id="gameFeedback">' + (isDone ? q.explanation : '') + '</div>';
+    container.innerHTML = html;
+
+    if (q.type === 'order') {
+      renderOrderChips();
+    }
+  }
+
+  function updateGameScore(delta) {
+    gameScore = Math.max(0, gameScore + delta);
+    document.getElementById('gameScoreDisplay').textContent = gameScore;
+  }
+
+  function submitGameMcq(idx, btnEl) {
+    if (gameSolved[gameCurrentIdx]) return;
+    var q = gameQuestions[gameCurrentIdx];
+    var fb = document.getElementById('gameFeedback');
+
+    if (idx === q.correctIndex) {
+      gameSolved[gameCurrentIdx] = true;
+      updateGameScore(5);
+      playFeedbackSound(true);
+      var allBtns = btnEl.parentElement.querySelectorAll('.option-btn');
+      allBtns.forEach(function(b) { b.disabled = true; });
+      btnEl.classList.add('opt-correct');
+      fb.className = 'quiz-feedback fb-ok';
+      fb.textContent = q.explanation;
+      document.getElementById('gameNextBtn').disabled = false;
+    } else {
+      updateGameScore(-1);
+      playFeedbackSound(false);
+      btnEl.classList.add('opt-wrong');
+      fb.className = 'quiz-feedback fb-err';
+      fb.textContent = 'Kurang tepat (-1 poin). Silakan pilih jawaban lain sampai benar agar dapat lanjut!';
+    }
+  }
+
+  function renderOrderChips() {
+    var targetEl = document.getElementById('gameOrderTarget');
+    var poolEl = document.getElementById('gameOrderPool');
+    if (!targetEl || !poolEl) return;
+
+    var isDone = gameSolved[gameCurrentIdx];
+    targetEl.innerHTML = '';
+    poolEl.innerHTML = '';
+
+    currentOrderSelected.forEach(function(item, idx) {
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'order-chip';
+      chip.textContent = (idx + 1) + '. ' + item;
+      if (!isDone) {
+        chip.onclick = function() {
+          currentOrderSelected.splice(idx, 1);
+          currentOrderPool.push(item);
+          renderOrderChips();
+        };
+      }
+      targetEl.appendChild(chip);
+    });
+
+    currentOrderPool.forEach(function(item, idx) {
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'order-chip';
+      chip.style.borderColor = '#94a3b8';
+      chip.textContent = item;
+      if (!isDone) {
+        chip.onclick = function() {
+          currentOrderPool.splice(idx, 1);
+          currentOrderSelected.push(item);
+          renderOrderChips();
+        };
+      }
+      poolEl.appendChild(chip);
+    });
+  }
+
+  function resetGameOrder() {
+    if (gameSolved[gameCurrentIdx]) return;
+    var q = gameQuestions[gameCurrentIdx];
+    currentOrderSelected = [];
+    currentOrderPool = shuffleArray(q.items.slice());
+    renderOrderChips();
+  }
+
+  function submitGameOrder() {
+    if (gameSolved[gameCurrentIdx]) return;
+    var q = gameQuestions[gameCurrentIdx];
+    var fb = document.getElementById('gameFeedback');
+
+    if (currentOrderSelected.length < q.items.length) {
+      fb.className = 'quiz-feedback fb-err';
+      fb.textContent = 'Pindahkan seluruh kartu ke kotak urutan atas terlebih dahulu sebelum memeriksa.';
+      return;
+    }
+
+    var isMatch = currentOrderSelected.every(function(val, i) {
+      return val === q.items[i];
+    });
+
+    if (isMatch) {
+      gameSolved[gameCurrentIdx] = true;
+      updateGameScore(5);
+      playFeedbackSound(true);
+      fb.className = 'quiz-feedback fb-ok';
+      fb.textContent = q.explanation;
+      document.getElementById('gameNextBtn').disabled = false;
+      renderOrderChips();
+    } else {
+      updateGameScore(-1);
+      playFeedbackSound(false);
+      fb.className = 'quiz-feedback fb-err';
+      fb.textContent = 'Urutan belum tepat (-1 poin). Klik kartu di kotak atas untuk mengembalikannya lalu susun ulang!';
+    }
+  }
+
+  function submitGameShort() {
+    if (gameSolved[gameCurrentIdx]) return;
+    var q = gameQuestions[gameCurrentIdx];
+    var inputEl = document.getElementById('gameShortInput');
+    var fb = document.getElementById('gameFeedback');
+    var userVal = normalizeText(inputEl.value);
+
+    if (!userVal) {
+      fb.className = 'quiz-feedback fb-err';
+      fb.textContent = 'Isi jawabanmu terlebih dahulu.';
+      return;
+    }
+
+    if (userVal === normalizeText(q.answer)) {
+      gameSolved[gameCurrentIdx] = true;
+      updateGameScore(5);
+      playFeedbackSound(true);
+      inputEl.disabled = true;
+      document.getElementById('btnCheckShort').disabled = true;
+      fb.className = 'quiz-feedback fb-ok';
+      fb.textContent = q.explanation;
+      document.getElementById('gameNextBtn').disabled = false;
+    } else {
+      updateGameScore(-1);
+      playFeedbackSound(false);
+      fb.className = 'quiz-feedback fb-err';
+      fb.textContent = 'Jawaban belum tepat (-1 poin). Coba hitung kembali dengan sifat logaritma!';
+    }
+  }
+
+  function gamePrevStep() {
+    if (gameCurrentIdx === 0) {
+      goToMenu('menu2');
+    } else {
+      gameCurrentIdx--;
+      renderGameQuestion();
+    }
+  }
+
+  function gameNextStep() {
+    if (!gameSolved[gameCurrentIdx]) return;
+    if (gameCurrentIdx < gameQuestions.length - 1) {
+      gameCurrentIdx++;
+      renderGameQuestion();
+    } else {
+      document.getElementById('gameActiveArea').style.display = 'none';
+      document.getElementById('gameSummaryArea').style.display = 'block';
+      document.getElementById('gameSumName').textContent = studentName || 'Siswa';
+      document.getElementById('gameSumClass').textContent = studentClass || '-';
+      document.getElementById('gameSumScore').textContent = gameScore;
+    }
+  }
+
+  // =========================================================
+  // MENU 4: BERLATIH (6 VARIASI TIPE SOAL DIACAK SETIAP MASUK)
+  // =========================================================
+  var practiceBank = [
+    {
+      id: 'mcq_single',
+      typeLabel: 'Tipe 1: Pilihan Ganda Biasa',
+      prompt: 'Nilai dari ²log 48 + ²log 3 − ²log 9 adalah...',
+      options: ['A. 2', 'B. 3', 'C. 4', 'D. 5'],
+      correctIndex: 2,
+      explanation: 'Pembahasan: ²log 48 + ²log 3 − ²log 9 = ²log ((48 × 3) ÷ 9) = ²log (144 ÷ 9) = ²log 16 = 4.'
+    },
+    {
+      id: 'mcq_complex',
+      typeLabel: 'Tipe 2: Pilihan Ganda Kompleks (Pilih lebih dari satu jawaban benar)',
+      prompt: 'Manakah di antara pernyataan logaritma berikut yang bernilai BENAR? (Centang semua jawaban yang tepat)',
+      options: [
+        '³log 27 = 3',
+        '⁵log 1 = 1',
+        '²log 8 + ²log 2 = 4',
+        '⁷log 7 = 1'
+      ],
+      correctIndices: [0, 2, 3],
+      explanation: 'Pembahasan: ³log 27 = 3 (benar), ²log 8 + ²log 2 = ²log 16 = 4 (benar), dan ⁷log 7 = 1 (benar). Sedangkan ⁵log 1 seharusnya bernilai 0.'
+    },
+    {
+      id: 'true_false',
+      typeLabel: 'Tipe 3: Benar atau Salah',
+      prompt: 'Pernyataan: Bentuk ᵃlog (b + c) selalu sama nilainya dengan ᵃlog b × ᵃlog c untuk setiap bilangan positif b dan c.',
+      options: ['Benar', 'Salah'],
+      correctIndex: 1,
+      explanation: 'Pembahasan: Pernyataan tersebut SALAH. Sifat yang benar adalah ᵃlog (b × c) = ᵃlog b + ᵃlog c (perkalian di dalam numerus menjadi penjumlahan di luar).'
+    },
+    {
+      id: 'short_text',
+      typeLabel: 'Tipe 4: Isian Singkat',
+      prompt: 'Jika ²log 3 = p, maka bentuk sederhana dari ²log 12 dalam variabel p adalah... (Contoh penulisan: p - 5)',
+      acceptedAnswers: ['p+2', '2+p'],
+      displayAnswer: 'p + 2',
+      explanation: 'Pembahasan: ²log 12 = ²log (3 × 4) = ²log 3 + ²log 4 = p + 2.'
+    },
+    {
+      id: 'matching',
+      typeLabel: 'Tipe 5: Menjodohkan Pasangan (Klik kiri lalu klik pasangannya di kanan)',
+      prompt: 'Pasangkan setiap bentuk logaritma di kolom kiri dengan nilai yang tepat di kolom kanan!',
+      pairs: [
+        { left: '⁹log 27', right: '3/2' },
+        { left: '²log 5 · ⁵log 16', right: '4' },
+        { left: '⁴log 64', right: '3' }
+      ],
+      explanation: 'Pembahasan: ⁹log 27 = ³²log 3³ = 3/2; ²log 5 · ⁵log 16 = ²log 16 = 4; dan ⁴log 64 = 3 karena 4³ = 64.'
+    },
+    {
+      id: 'dnd',
+      typeLabel: 'Tipe 6: Drag-and-Drop / Klik Kartu ke Kotak Tujuan',
+      prompt: 'Seret kartu jawaban (atau klik kartu lalu klik kotak tujuan) untuk melengkapi setiap sifat logaritma berikut!',
+      cards: ['0', 'n · ᵃlog b', 'ᵃlog c'],
+      slots: [
+        { label: 'ᵃlog 1 =', expected: '0' },
+        { label: 'ᵃlog (bⁿ) =', expected: 'n · ᵃlog b' },
+        { label: 'ᵃlog b · ᵇlog c =', expected: 'ᵃlog c' }
+      ],
+      explanation: 'Pembahasan: ᵃlog 1 = 0, pangkat numerus turun ke depan menjadi n · ᵃlog b, dan sifat berantai menyisakan ᵃlog c.'
+    }
+  ];
+
+  var pracQuestions = [];
+  var pracCurrentIdx = 0;
+  var pracScore = 0;
+  var pracState = [];
+
+  // Helper state for matching & DnD
+  var matchSelectedLeft = null;
+  var matchMatchedPairs = {};
+  var dndSelectedCard = null;
+  var dndSlotValues = {};
+
+  function initPractice() {
+    pracQuestions = shuffleArray(practiceBank.slice());
+    pracCurrentIdx = 0;
+    pracScore = 0;
+    pracState = pracQuestions.map(function() {
+      return { solved: false, wrongAttempt: false, userSummary: null };
+    });
+    document.getElementById('pracScoreDisplay').textContent = '0';
+    document.getElementById('practiceActiveArea').style.display = 'block';
+    document.getElementById('practiceSummaryArea').style.display = 'none';
+    renderPracticeQuestion();
+  }
+
+  function updatePracScore(delta) {
+    pracScore = Math.max(0, pracScore + delta);
+    document.getElementById('pracScoreDisplay').textContent = pracScore;
+  }
+
+  function renderPracticeQuestion() {
+    var q = pracQuestions[pracCurrentIdx];
+    var st = pracState[pracCurrentIdx];
+    document.getElementById('pracProgressText').textContent = 'Soal ' + (pracCurrentIdx + 1) + ' dari ' + pracQuestions.length;
+
+    var prevBtn = document.getElementById('pracPrevBtn');
+    prevBtn.textContent = (pracCurrentIdx === 0) ? '← Sebelumnya (Ke Bermain)' : '← Sebelumnya';
+
+    var nextBtn = document.getElementById('pracNextBtn');
+    nextBtn.textContent = (pracCurrentIdx === pracQuestions.length - 1) ? 'Selesai & Lihat Skor →' : 'Selanjutnya →';
+    nextBtn.disabled = !st.solved;
+
+    var container = document.getElementById('pracQuestionContainer');
+    var html = '<span class="badge-pill" style="background:#dcfce7; color:#15803d;">' + q.typeLabel + '</span>';
+    html += '<div class="question-text">' + (pracCurrentIdx + 1) + '. ' + q.prompt + '</div>';
+
+    if (q.id === 'mcq_single' || q.id === 'true_false') {
+      html += '<div class="option-grid">';
+      q.options.forEach(function(opt, idx) {
+        var cls = 'option-btn';
+        if (st.solved && idx === q.correctIndex) cls += ' opt-correct';
+        html += '<button type="button" class="' + cls + '" ' + (st.solved ? 'disabled' : '') + ' onclick="submitPracSingle(' + idx + ', this)">' + opt + '</button>';
+      });
+      html += '</div>';
+    } else if (q.id === 'mcq_complex') {
+      html += '<div class="option-grid" style="margin-bottom:14px;">';
+      q.options.forEach(function(opt, idx) {
+        var isChecked = st.solved && q.correctIndices.indexOf(idx) !== -1;
+        html += '<label class="checkbox-row" style="' + (isChecked ? 'background:#dcfce7; border-color:#16a34a;' : '') + '">';
+        html += '<input type="checkbox" name="pracComplexOpt" value="' + idx + '" ' + (isChecked ? 'checked' : '') + ' ' + (st.solved ? 'disabled' : '') + '>';
+        html += '<span>' + opt + '</span></label>';
+      });
+      html += '</div>';
+      html += '<button type="button" class="btn-submit-ans" id="btnPracComplex" ' + (st.solved ? 'disabled' : '') + ' onclick="submitPracComplex()">Periksa Jawaban</button>';
+    } else if (q.id === 'short_text') {
+      html += '<div class="short-answer-row">';
+      html += '<input type="text" class="short-input" id="pracShortInput" placeholder="Ketik jawabanmu..." value="' + (st.solved ? q.displayAnswer : '') + '" ' + (st.solved ? 'disabled' : '') + '>';
+      html += '<button type="button" class="btn-submit-ans" id="btnPracShort" ' + (st.solved ? 'disabled' : '') + ' onclick="submitPracShort()">Periksa Jawaban</button>';
+      html += '</div>';
+    } else if (q.id === 'matching') {
+      matchSelectedLeft = null;
+      matchMatchedPairs = {};
+      if (st.solved) {
+        q.pairs.forEach(function(p, i) { matchMatchedPairs[i] = p.right; });
+      }
+      var rightShuffled = st.solved ? q.pairs.map(function(p) { return p.right; }) : shuffleArray(q.pairs.map(function(p) { return p.right; }));
+      html += '<div class="matching-wrapper" id="matchingWrapper">';
+      html += '<svg class="matching-svg-overlay" id="matchingSvgOverlay"></svg>';
+      html += '<div class="matching-grid">';
+      html += '<div class="match-col" id="matchLeftCol">';
+      q.pairs.forEach(function(p, i) {
+        html += '<div class="match-item ' + (st.solved ? 'matched' : '') + '" data-left-idx="' + i + '" onclick="selectMatchLeft(' + i + ', this)">' + p.left + '</div>';
+      });
+      html += '</div>';
+      html += '<div class="match-col" id="matchRightCol">';
+      rightShuffled.forEach(function(rVal) {
+        html += '<div class="match-item ' + (st.solved ? 'matched' : '') + '" data-right-val="' + rVal + '" onclick="selectMatchRight(this)">' + rVal + '</div>';
+      });
+      html += '</div></div></div>';
+    } else if (q.id === 'dnd') {
+      dndSelectedCard = null;
+      dndSlotValues = {};
+      if (st.solved) {
+        q.slots.forEach(function(s, i) { dndSlotValues[i] = s.expected; });
+      }
+      var cardsOrder = st.solved ? [] : shuffleArray(q.cards.slice());
+      html += '<div class="dnd-bank" id="dndCardBank">';
+      if (st.solved) {
+        html += '<span style="color:#16a34a; font-weight:700;">Semua kartu telah terpasang dengan tepat!</span>';
+      } else {
+        cardsOrder.forEach(function(cardTxt) {
+          html += '<div class="dnd-card" draggable="true" data-card="' + cardTxt + '" ondragstart="onDragCardStart(event)" onclick="onTapCard(this)">' + cardTxt + '</div>';
+        });
+      }
+      html += '</div>';
+      html += '<div class="dnd-slots">';
+      q.slots.forEach(function(s, i) {
+        var filledText = st.solved ? s.expected : 'Letakkan / Klik di sini';
+        html += '<div class="dnd-slot-row">';
+        html += '<span style="font-weight:700; font-size:1.05rem;">' + s.label + '</span>';
+        html += '<div class="dnd-dropzone ' + (st.solved ? 'filled' : '') + '" id="dndSlot-' + i + '" ondragover="event.preventDefault()" ondrop="onDropSlot(event, ' + i + ')" onclick="onTapSlot(' + i + ')">' + filledText + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '<div style="display:flex; gap:10px; flex-wrap:wrap;">';
+      html += '<button type="button" class="btn-submit-ans" id="btnPracDnd" ' + (st.solved ? 'disabled' : '') + ' onclick="submitPracDnd()">Periksa Pasangan</button>';
+      html += '<button type="button" class="nav-btn nav-prev" ' + (st.solved ? 'disabled' : '') + ' onclick="renderPracticeQuestion()">Reset Kartu</button>';
+      html += '</div>';
+    }
+
+    html += '<div class="quiz-feedback ' + (st.solved ? 'fb-ok' : '') + '" id="pracFeedback">' + (st.solved ? q.explanation : '') + '</div>';
+    container.innerHTML = html;
+
+    if (q.id === 'matching') {
+      requestAnimationFrame(drawMatchingArrows);
+    }
+  }
+
+  function drawMatchingArrows() {
+    var wrapper = document.getElementById('matchingWrapper');
+    var svg = document.getElementById('matchingSvgOverlay');
+    if (!wrapper || !svg) return;
+
+    var wrapRect = wrapper.getBoundingClientRect();
+    var svgContent =
+      '<defs>' +
+      '<marker id="matchArrowHead" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">' +
+      '<polygon points="0 0, 10 3.5, 0 7" fill="#16a34a" />' +
+      '</marker>' +
+      '</defs>';
+
+    Object.keys(matchMatchedPairs).forEach(function(leftIdx) {
+      var rightVal = matchMatchedPairs[leftIdx];
+      var leftEl = document.querySelector('#matchLeftCol .match-item[data-left-idx="' + leftIdx + '"]');
+      var rightEl = document.querySelector('#matchRightCol .match-item[data-right-val="' + rightVal + '"]');
+      if (leftEl && rightEl) {
+        var lRect = leftEl.getBoundingClientRect();
+        var rRect = rightEl.getBoundingClientRect();
+        var x1 = lRect.right - wrapRect.left;
+        var y1 = (lRect.top + lRect.bottom) / 2 - wrapRect.top;
+        var x2 = rRect.left - wrapRect.left - 3;
+        var y2 = (rRect.top + rRect.bottom) / 2 - wrapRect.top;
+        svgContent +=
+          '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" ' +
+          'stroke="#16a34a" stroke-width="3" stroke-linecap="round" marker-end="url(#matchArrowHead)" />';
+      }
+    });
+
+    svg.innerHTML = svgContent;
+  }
+
+  window.addEventListener('resize', drawMatchingArrows);
+
+  function handlePracSuccess(q) {
+    pracState[pracCurrentIdx].solved = true;
+    updatePracScore(10);
+    playFeedbackSound(true);
+    var fb = document.getElementById('pracFeedback');
+    fb.className = 'quiz-feedback fb-ok';
+    fb.innerHTML = '<strong>Benar (+10 Poin)!</strong> ' + q.explanation;
+    document.getElementById('pracNextBtn').disabled = false;
+  }
+
+  function handlePracWrong(customMsg) {
+    updatePracScore(-3);
+    playFeedbackSound(false);
+    var fb = document.getElementById('pracFeedback');
+    fb.className = 'quiz-feedback fb-err';
+    fb.innerHTML =
+      '<div><strong>Jawaban belum tepat (-3 Poin).</strong> ' + customMsg + '</div>' +
+      '<button type="button" class="btn-retry" onclick="renderPracticeQuestion()">🔄 Coba Lagi</button>';
+  }
+
+  function submitPracSingle(idx, btnEl) {
+    if (pracState[pracCurrentIdx].solved) return;
+    var q = pracQuestions[pracCurrentIdx];
+    var allBtns = btnEl.parentElement.querySelectorAll('.option-btn');
+    allBtns.forEach(function(b) { b.disabled = true; });
+
+    if (idx === q.correctIndex) {
+      btnEl.classList.add('opt-correct');
+      handlePracSuccess(q);
+    } else {
+      btnEl.classList.add('opt-wrong');
+      handlePracWrong('Periksa kembali perhitungan sifat logaritma pada soal ini.');
+    }
+  }
+
+  function submitPracComplex() {
+    if (pracState[pracCurrentIdx].solved) return;
+    var q = pracQuestions[pracCurrentIdx];
+    var checkedBoxes = document.querySelectorAll('input[name="pracComplexOpt"]:checked');
+    var chosen = [];
+    checkedBoxes.forEach(function(cb) {
+      chosen.push(parseInt(cb.value, 10));
+    });
+
+    if (chosen.length === 0) {
+      var fb = document.getElementById('pracFeedback');
+      fb.className = 'quiz-feedback fb-err';
+      fb.textContent = 'Pilih minimal satu pernyataan terlebih dahulu.';
+      return;
+    }
+
+    document.getElementById('btnPracComplex').disabled = true;
+    var allBoxes = document.querySelectorAll('input[name="pracComplexOpt"]');
+    allBoxes.forEach(function(cb) { cb.disabled = true; });
+
+    chosen.sort();
+    var target = q.correctIndices.slice().sort();
+    var isExact = (chosen.length === target.length) && chosen.every(function(v, i) { return v === target[i]; });
+
+    if (isExact) {
+      pracState[pracCurrentIdx].solved = true;
+      updatePracScore(10);
+      playFeedbackSound(true);
+      renderPracticeQuestion();
+      var fb = document.getElementById('pracFeedback');
+      fb.innerHTML = '<strong>Benar (+10 Poin)!</strong> ' + q.explanation;
+    } else {
+      handlePracWrong('Pastikan kamu mencentang semua pernyataan yang benar saja.');
+    }
+  }
+
+  function submitPracShort() {
+    if (pracState[pracCurrentIdx].solved) return;
+    var q = pracQuestions[pracCurrentIdx];
+    var inputEl = document.getElementById('pracShortInput');
+    var cleanUser = normalizeText(inputEl.value);
+
+    if (!cleanUser) {
+      var fb = document.getElementById('pracFeedback');
+      fb.className = 'quiz-feedback fb-err';
+      fb.textContent = 'Tuliskan jawabanmu terlebih dahulu.';
+      return;
+    }
+
+    inputEl.disabled = true;
+    document.getElementById('btnPracShort').disabled = true;
+
+    var isRight = q.acceptedAnswers.some(function(ans) {
+      return normalizeText(ans) === cleanUser;
+    });
+
+    if (isRight) {
+      handlePracSuccess(q);
+    } else {
+      handlePracWrong('Uraikan 12 menjadi perkalian 3 dan 4 pada ²log 12.');
+    }
+  }
+
+  // Matching Handlers
+  function selectMatchLeft(leftIdx, el) {
+    if (pracState[pracCurrentIdx].solved || matchMatchedPairs[leftIdx]) return;
+    document.querySelectorAll('#matchLeftCol .match-item').forEach(function(item) {
+      item.classList.remove('selected');
+    });
+    el.classList.add('selected');
+    matchSelectedLeft = leftIdx;
+  }
+
+  function selectMatchRight(el) {
+    if (pracState[pracCurrentIdx].solved || el.classList.contains('matched')) return;
+    if (matchSelectedLeft === null) {
+      var fb = document.getElementById('pracFeedback');
+      fb.className = 'quiz-feedback fb-err';
+      fb.textContent = 'Klik salah satu pernyataan di kolom kiri terlebih dahulu!';
+      return;
+    }
+
+    var q = pracQuestions[pracCurrentIdx];
+    var rightVal = el.getAttribute('data-right-val');
+    var expectedRight = q.pairs[matchSelectedLeft].right;
+
+    if (rightVal === expectedRight) {
+      matchMatchedPairs[matchSelectedLeft] = rightVal;
+      var leftEl = document.querySelector('#matchLeftCol .match-item[data-left-idx="' + matchSelectedLeft + '"]');
+      if (leftEl) {
+        leftEl.classList.remove('selected');
+        leftEl.classList.add('matched');
+      }
+      el.classList.add('matched');
+      matchSelectedLeft = null;
+      drawMatchingArrows();
+
+      if (Object.keys(matchMatchedPairs).length === q.pairs.length) {
+        handlePracSuccess(q);
+      }
+    } else {
+      handlePracWrong('Pasangan tersebut belum cocok. Coba lagi!');
+    }
+  }
+
+  // Drag and Drop + Tap-to-Place Handlers
+  function onDragCardStart(ev) {
+    ev.dataTransfer.setData('text/plain', ev.target.getAttribute('data-card'));
+  }
+
+  function onTapCard(cardEl) {
+    if (pracState[pracCurrentIdx].solved) return;
+    document.querySelectorAll('.dnd-card').forEach(function(c) {
+      c.classList.remove('selected-card');
+    });
+    cardEl.classList.add('selected-card');
+    dndSelectedCard = cardEl.getAttribute('data-card');
+  }
+
+  function placeCardInSlot(slotIdx, cardText) {
+    if (!cardText || pracState[pracCurrentIdx].solved) return;
+    dndSlotValues[slotIdx] = cardText;
+    var slotEl = document.getElementById('dndSlot-' + slotIdx);
+    if (slotEl) {
+      slotEl.textContent = cardText;
+      slotEl.classList.add('filled');
+    }
+    dndSelectedCard = null;
+    document.querySelectorAll('.dnd-card').forEach(function(c) {
+      c.classList.remove('selected-card');
+    });
+  }
+
+  function onDropSlot(ev, slotIdx) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData('text/plain');
+    placeCardInSlot(slotIdx, data);
+  }
+
+  function onTapSlot(slotIdx) {
+    if (dndSelectedCard) {
+      placeCardInSlot(slotIdx, dndSelectedCard);
+    }
+  }
+
+  function submitPracDnd() {
+    if (pracState[pracCurrentIdx].solved) return;
+    var q = pracQuestions[pracCurrentIdx];
+    if (Object.keys(dndSlotValues).length < q.slots.length) {
+      var fb = document.getElementById('pracFeedback');
+      fb.className = 'quiz-feedback fb-err';
+      fb.textContent = 'Lengkapi seluruh kotak tujuan terlebih dahulu.';
+      return;
+    }
+
+    document.getElementById('btnPracDnd').disabled = true;
+    var allRight = q.slots.every(function(s, i) {
+      return dndSlotValues[i] === s.expected;
+    });
+
+    if (allRight) {
+      handlePracSuccess(q);
+    } else {
+      handlePracWrong('Masih ada kartu yang tertukar posisinya. Klik Coba Lagi untuk menyusun ulang.');
+    }
+  }
+
+  function pracPrevStep() {
+    if (pracCurrentIdx === 0) {
+      goToMenu('menu3');
+    } else {
+      pracCurrentIdx--;
+      renderPracticeQuestion();
+    }
+  }
+
+  function pracNextStep() {
+    if (!pracState[pracCurrentIdx].solved) return;
+    if (pracCurrentIdx < pracQuestions.length - 1) {
+      pracCurrentIdx++;
+      renderPracticeQuestion();
+    } else {
+      document.getElementById('practiceActiveArea').style.display = 'none';
+      document.getElementById('practiceSummaryArea').style.display = 'block';
+      document.getElementById('pracSumName').textContent = studentName || 'Siswa';
+      document.getElementById('pracSumClass').textContent = studentClass || '-';
+      document.getElementById('pracSumScore').textContent = pracScore;
+    }
+  }
+
+  // Utilities
+  function shuffleArray(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = temp;
+    }
+    return arr;
+  }
+
+  function normalizeText(str) {
+    return String(str || '').toLowerCase().replace(/\s+/g, '');
+  }
+
+  // Refleksi & Unduh File
+  function selectRating(el, value) {
+    var options = document.querySelectorAll('.rating-option');
+    options.forEach(function(opt) {
+      opt.classList.remove('selected');
+    });
+    el.classList.add('selected');
+    selectedUnderstanding = value;
+  }
+
+  function downloadReflection() {
+    var konsep = document.getElementById('refKonsep').value.trim() || '(Belum diisi)';
+    var kesulitan = document.getElementById('refKesulitan').value.trim() || '(Belum diisi)';
+    var tanggal = new Date().toLocaleDateString('id-ID', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+
+    var content =
+      '====================================================\n' +
+      'LEMBAR REFLEKSI PEMBELAJARAN - LOGARITMA\n' +
+      'Mata Pelajaran : Matematika SMA Kelas X Fase E\n' +
+      'Guru Pengampu  : Bayu Gunarto, M.Pd (SMAN 2 Kisaran)\n' +
+      '====================================================\n\n' +
+      'Nama Siswa       : ' + (studentName || 'Siswa') + '\n' +
+      'Kelas            : ' + (studentClass || '-') + '\n' +
+      'Tanggal          : ' + tanggal + '\n' +
+      'Skor Bermain     : ' + gameScore + '\n' +
+      'Skor Berlatih    : ' + pracScore + '\n' +
+      'Tingkat Pemahaman: ' + selectedUnderstanding + '\n\n' +
+      '1. Konsep atau sifat logaritma yang paling mudah dipahami:\n' +
+      '   ' + konsep + '\n\n' +
+      '2. Bagian yang masih terasa menantang:\n' +
+      '   ' + kesulitan + '\n\n' +
+      '====================================================\n';
+
+    var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    var safeName = (studentName || 'Siswa').replace(/[^a-zA-Z0-9]/g, '_');
+    a.href = url;
+    a.download = 'Refleksi_Logaritma_' + safeName + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    document.getElementById('refStatus').style.display = 'block';
+  }
+
+  // Fallback Foto Profil Pengembang jika gagal dimuat
+  function handlePhotoFallback() {
+    var wrap = document.getElementById('devPhotoContainer');
+    wrap.innerHTML =
+      '<svg viewBox="0 0 120 120" width="100%" height="100%" aria-label="Avatar Guru">' +
+      '<circle cx="60" cy="60" r="60" fill="#dbeafe"/>' +
+      '<circle cx="60" cy="44" r="22" fill="#2563eb"/>' +
+      '<path d="M 24 106 C 24 80, 96 80, 96 106" fill="#2563eb"/>' +
+      '</svg>';
+  }
+
+  // Fungsi Keluar / Exit Aplikasi
+  function promptExitApp() {
+    document.getElementById('exitModal').classList.add('active');
+  }
+
+  function closeExitModal() {
+    document.getElementById('exitModal').classList.remove('active');
+  }
+
+  function confirmExitApp() {
+    closeExitModal();
+    stopBgm();
+    document.getElementById('globalControls').style.display = 'none';
+
+    try {
+      window.close();
+    } catch (e) {}
+
+    var screens = document.querySelectorAll('.screen');
+    screens.forEach(function(sc) {
+      sc.classList.remove('active');
+    });
+    document.getElementById('screen-farewell').classList.add('active');
+  }
+
+  function reenterApp() {
+    document.getElementById('globalControls').style.display = 'flex';
+    if (studentName && studentClass) {
+      goToMenu('home');
+    } else {
+      goToMenu('login');
+    }
+  }
+</script>
+</body>
+</html>
